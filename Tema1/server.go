@@ -11,9 +11,7 @@ import (
 )
 
 func main() {
-	fmt.Println(config.Hello)
-
-	ln, err := net.Listen("tcp", ":9000")
+	ln, err := net.Listen("tcp", config.Port)
 	if err != nil {
 		panic(err)
 	}
@@ -52,8 +50,12 @@ func connect(conn net.Conn) {
 
 		// ---- procesare request ----
 		args := strings.Split(msg, " ")
+		argCount := len(args)
 
-		raspuns := rezolva(args)
+		raspuns := "Prea multe argumente."
+		if argCount < config.MaxArgs {
+			raspuns = rezolva(args)
+		}
 
 		// raspuns catre client
 		conn.Write([]byte(raspuns + "\n"))
