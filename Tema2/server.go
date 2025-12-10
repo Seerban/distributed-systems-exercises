@@ -134,10 +134,19 @@ func ex1Func(s string) int {
 }
 
 func ex1(args []string) string {
-	sum := 0
-	for i := 0; i < len(args); i++ {
-		sum += Reduce(Map(args[i], ex1Func))
+	results := make(chan int, len(args)-1)
+
+	for i := 1; i < len(args); i++ {
+		go func(arg string) {
+			results <- Reduce(Map(arg, ex1Func))
+		}(args[i])
 	}
+
+	sum := 0
+	for i := 1; i < len(args); i++ {
+		sum += <-results
+	}
+
 	avg := float64(sum) / float64(len(args)-1)
 	return fmt.Sprintf("%.2f", avg)
 }
